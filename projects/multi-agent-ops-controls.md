@@ -1,57 +1,24 @@
-# Multi-Agent Operations Workflow with Human Controls
+# Multi-Agent Operations — Design Note
 
-## Purpose
+> **Evidence status:** concept/design documentation. This file is not presented as public proof of a deployed multi-agent system.
 
-Explore how multiple specialized AI/automation agents can coordinate business operations without treating unrestricted autonomy as a goal.
+## Design goal
 
-The architecture is designed around **control, observability and human approval**.
+Define a controlled pattern for delegating operational work across specialized agents while retaining permission boundaries, explicit human decisions for consequential actions, observable state and a termination path.
 
-## System concept
+See the corrected [control-plane diagram](../architecture/multi-agent-control-plane.md).
 
-```text
-Business objective
-      ↓
-Coordinator / routing layer
-      ↓
-Specialized agents
-      ↓
-Permission boundaries
-      ↓
-Shared operational state
-      ↓
-Approval gates
-      ↓
-Execution
-      ↓
-Audit / monitoring / exception handling
-```
+## Intended controls
 
-## Design principles
+- specialized responsibilities rather than unrestricted agents;
+- least-authority permission boundaries;
+- explicit approve **and reject** paths for consequential actions;
+- state and event history outside conversational memory;
+- stop/recover/escalate handling for unhealthy execution;
+- completion or operational/budget termination conditions.
 
-- specialized responsibilities instead of one unrestricted agent
-- deterministic permission boundaries
-- human approval for consequential actions
-- shared state for operational continuity
-- auditability of actions and outcomes
-- cost/capacity controls
-- safeguards against fabricated commercial/payment outcomes
-- monitoring and failure handling
+## What is intentionally not claimed
 
-## Why this matters
+This public repository currently does not provide sanitized runtime logs, test evidence or runnable multi-agent source code. Until that evidence can be safely published, this remains a design note.
 
-A useful multi-agent system is not measured by how autonomous it sounds. It is measured by whether work can be delegated while maintaining clear authority boundaries, traceability and a safe path for exceptions.
-
-## Portfolio boundary
-
-This public case study intentionally excludes production credentials, prospect/customer information, internal prompts, private business data and proprietary operating rules.
-
-A sanitized runnable demonstration may be added separately after it can be validated without exposing production assets.
-
-## What this demonstrates
-
-- multi-agent orchestration thinking
-- human-in-the-loop architecture
-- operational governance
-- approval and permission design
-- monitoring and audit concepts
-- automation safety and failure containment
+Production prompts, credentials, prospect/customer information, private databases and proprietary operating rules are excluded.
