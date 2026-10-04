@@ -1,0 +1,7 @@
+{"at":"2026-10-04T10:28:31.526Z","path":"/v1beta/models/gemini-2.5-flash:generateContent","apiKeyHeaderPresent":true,"keyInQuery":false,"status":200}
+{"at":"2026-10-04T10:28:32.521Z","path":"/v1beta/models/gemini-2.5-flash:generateContent","apiKeyHeaderPresent":true,"keyInQuery":false,"status":500}
+{"at":"2026-10-04T10:28:34.543Z","path":"/v1beta/models/gemini-2.5-flash:generateContent","apiKeyHeaderPresent":true,"keyInQuery":false,"status":500}
+{"at":"2026-10-04T10:28:36.562Z","path":"/v1beta/models/gemini-2.5-flash:generateContent","apiKeyHeaderPresent":true,"keyInQuery":false,"status":500}
+{"at":"2026-10-04T10:28:36.762Z","path":"/v1beta/models/gemini-2.5-flash:generateContent","apiKeyHeaderPresent":true,"keyInQuery":false,"status":200}
+{"at":"2026-10-04T10:28:36.961Z","path":"/v1beta/models/gemini-2.5-flash:generateContent","apiKeyHeaderPresent":true,"keyInQuery":false,"status":200}
+{"at":"2026-10-04T10:28:37.138Z","path":"/v1beta/models/gemini-2.5-flash:generateContent","apiKeyHeaderPresent":true,"keyInQuery":false,"status":200}

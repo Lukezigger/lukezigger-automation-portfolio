@@ -1,0 +1,23 @@
+n8n version: 2.41.6  run at: 2026-10-04T10:28:30Z
+01_valid_request       expected=200 got=200 PASS  x-request-id=test-01_valid_request
+  body: {"requestId":"test-01_valid_request","model":"mock-gemini","result":{"summary":"Leads arrive by WhatsApp and web form and are copied into a spreadsheet by hand, so follow-up is late and untracked.","automation_opportunities":[{"process":"Lead capture","suggested_automation":"Webhook intake from form and WhatsApp into one CRM table with de-duplication on phone/email","tools":["n8n","CRM API"],"comp
+02_missing_secret      expected=403 got=403 PASS  x-request-id=none
+  body: Authorization data is wrong!
+03_wrong_secret        expected=403 got=403 PASS  x-request-id=none
+  body: Authorization data is wrong!
+04_empty_body          expected=400 got=400 PASS  x-request-id=test-04_empty_body
+  body: {"requestId":"test-04_empty_body","error":"invalid_input","details":["problem is required and must be a non-empty string"]}
+05_problem_too_short   expected=400 got=400 PASS  x-request-id=test-05_problem_too_short
+  body: {"requestId":"test-05_problem_too_short","error":"invalid_input","details":["problem must be at least 20 characters"]}
+06_wrong_types         expected=400 got=400 PASS  x-request-id=test-06_wrong_types
+  body: {"requestId":"test-06_wrong_types","error":"invalid_input","details":["problem is required and must be a non-empty string","industry must be a string"]}
+07_upstream_500        expected=502 got=502 PASS  x-request-id=test-07_upstream_500
+  body: {"requestId":"test-07_upstream_500","error":"upstream_model_error","detail":"model request failed after 3 attempts"}
+08_empty_model_reply   expected=502 got=502 PASS  x-request-id=test-08_empty_model_reply
+  body: {"requestId":"test-08_empty_model_reply","error":"empty_model_response","detail":"no candidates (blockReason: SAFETY)"}
+09_non_json_model_reply expected=502 got=502 PASS  x-request-id=test-09_non_json_model_reply
+  body: {"requestId":"test-09_non_json_model_reply","error":"invalid_model_json","detail":"model text is not valid JSON"}
+10_wrong_shape_reply   expected=502 got=502 PASS  x-request-id=test-10_wrong_shape_reply
+  body: {"requestId":"test-10_wrong_shape_reply","error":"model_output_schema_mismatch","detail":"invalid fields: summary, automation_opportunities, next_step"}
+RESULT: 10 passed, 0 failed
+

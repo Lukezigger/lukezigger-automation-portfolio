@@ -1,0 +1,6 @@
+== ORIGINAL workflow, request WITHOUT x-webhook-secret header
+HTTP 500 | content-type: application/json; charset=utf-8
+{"message":"Error in workflow"}
+== ORIGINAL workflow, request with an arbitrary x-webhook-secret value
+HTTP 500 | content-type: application/json; charset=utf-8
+{"message":"Error in workflow"}
