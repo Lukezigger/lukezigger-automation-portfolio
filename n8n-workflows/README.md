@@ -1,20 +1,15 @@
-# n8n Workflow Evidence
+# n8n workflows
 
-This directory contains only workflow artifacts that actually exist and can be safely published.
+All three are LukeZigger workflows built by me. Their October 2026 versions were hardened and tested on a clean n8n 2.41.6 instance on 4 Oct 2026.
 
-## Available now
+| Workflow | Integrations | Failure handling | Tests |
+|---|---|---|---|
+| [AI consultation endpoint](ai-consultation-engine/) | Webhook, Gemini REST API | Header auth, input validation, 3× retry, 502 on empty, blocked or invalid model output | 10/10 (mock model) |
+| [WhatsApp lead qualification](whatsapp-lead-qualification/) | Webhook (demo: no external systems) | Header auth, required-field validation | 5/5 |
+| [Call outcome → CRM → follow-up](calling-agent-crm-followup/) | Webhook, CRM REST API, notification API | Header auth, validation, 3× CRM retry, 502 when the CRM is down | 6/6 (mock CRM) |
 
-### [Authenticated Gemini endpoint](ai-consultation-engine/README.md)
+Each folder has the workflow JSON, test evidence, screenshots and a table of what changed from my original export.
 
-A sanitized six-node workflow derived from a real LukeZigger implementation. The JSON is available for inspection, but the public copy has **not yet been clean-instance import-tested**, so it is not presented as a validated template.
+Before publishing, every export is checked with [`scan_exports.py`](scan_exports.py) for credential IDs, webhook IDs, URLs, emails, phone numbers and key-like strings. Result on 4 Oct 2026: clean. Credential references are placeholders (`REPLACE_WITH_YOUR_CREDENTIAL`); you attach your own after import.
 
-## Publication rule
-
-Additional workflows will appear here only after the original export is available and:
-- credentials, tokens and credential IDs are removed;
-- production webhook identifiers and private endpoints are removed;
-- client/company identifiers and personal data are removed;
-- safe sample data replaces private production data;
-- the sanitized workflow is inspected and, where possible, re-import/run tested.
-
-There is deliberately no list of future/candidate workflows here: the portfolio shows artifacts that exist rather than advertising empty categories.
+Not published: other workflows I have built for clients. They contain client systems and data.
