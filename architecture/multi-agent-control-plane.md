@@ -1,6 +1,8 @@
-# Multi-Agent Operations — Control Plane
+# Multi-Agent Operations — Design Note
 
-The public architecture focuses on how delegated automation is constrained and observed.
+> **Status:** architecture/design note. This page does not, by itself, claim that a deployed multi-agent system is proven by this public repository. Runtime claims belong here only when public evidence is available.
+
+The purpose of this design is to show how delegated automation can be constrained, approved and stopped.
 
 ```mermaid
 flowchart TD
@@ -12,30 +14,28 @@ flowchart TD
     C2 --> D
     C3 --> D
     D --> E{Consequential action?}
-    E -- Yes --> F[Human Approval Gate]
-    E -- No --> G[Execution Layer]
-    F --> G
-    G --> H[Shared Operational State]
-    G --> I[Audit / Event Log]
+    E -- No --> X[Execution Layer]
+    E -- Yes --> F{Human decision}
+    F -- Approve --> X
+    F -- Reject --> R[Reject / return for revision]
+    X --> H[Shared Operational State]
+    X --> I[Audit / Event Log]
     H --> J[Monitoring & Exceptions]
     I --> J
-    J --> K{Healthy?}
-    K -- No --> L[Stop / Escalate / Recover]
+    J --> K{Healthy and work remaining?}
+    K -- No / unhealthy --> L[Stop / Escalate / Recover]
     K -- Yes --> B
+    K -- No work remaining --> M[Complete]
 ```
 
-## Control principles
+## Design principles
 
-**Least authority.** An agent should receive only the capability needed for its responsibility.
+- Give each specialist only the capability required for its role.
+- Require an explicit approve/reject decision for consequential actions.
+- Keep operational state and event history outside conversational memory.
+- Give failures a stop, recovery or escalation route.
+- End execution when the objective is complete or a budget/operational boundary is reached.
 
-**Human gates.** Consequential external actions should not become autonomous merely because an LLM can propose them.
+## Evidence boundary
 
-**Observable state.** Work should be traceable through state and event records rather than relying on conversational memory.
-
-**Failure containment.** Exceptions need a stop, retry, recovery, or escalation path.
-
-**Commercial integrity.** Revenue, payment, prospect, and outcome states must come from verified system evidence rather than model-generated claims.
-
-## Public boundary
-
-No production prompts, credentials, prospect/customer records, private databases, or proprietary operating rules are included here.
+This page is intentionally a design note until sanitized runtime evidence can be published. It contains no production prompts, credentials, prospect/customer records, private databases, or proprietary operating rules.
