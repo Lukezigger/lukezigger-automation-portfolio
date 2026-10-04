@@ -1,45 +1,30 @@
-# Canada B2B Platform — Public Architecture
+# Canadian B2B data platform — architecture (anonymized)
 
-This diagram intentionally shows system boundaries and engineering controls without exposing source endpoints, raw records, credentials, or proprietary entity-matching logic.
+> Client project. This page shows the logical design only. It contains no client code, endpoints, credentials, source configuration, infrastructure details or data.
 
-```mermaid
-flowchart LR
-    A[Source Inputs] --> B[Ingestion Layer]
-    B --> C[Validation & Normalization]
-    C --> D[Deduplication / Entity Handling]
-    D --> E[Provenance-Aware Storage]
-    E --> F[(PostgreSQL 16)]
-    F --> G[API Layer]
-    F --> H[Scheduled Worker]
-    G --> I[Dashboard / Consumers]
-    H --> J[Health & Verification]
-    G --> J
-```
-
-## Release controls
+## Data flow and failure handling
 
 ```mermaid
 flowchart TD
-    A[Source Change] --> B[Automated Tests]
-    B --> C{Tests clean?}
-    C -- No --> D[Fix / Re-test]
-    D --> B
-    C -- Yes --> E[Fresh-image migration test]
-    E --> F[Database + API health checks]
-    F --> G[Production verification]
+    S[Public-sector open-data sources] --> F[Polite HTTP client<br/>robots.txt · rate limit · retry/backoff]
+    F -->|fetch fails| FX[run = failed<br/>processed records kept · error logged]
+    F --> R[Raw records<br/>new payload = new version]
+    R -->|bad record| BX[error_log · skip · run = partial]
+    R --> O[Field observations<br/>source trust × confidence]
+    O --> SEL[Value selection<br/>priority · recency · agreement]
+    SEL --> ER[Entity resolution<br/>match candidates → merges]
+    ER --> SC[Lead scoring]
+    SC --> DNC[Do-Not-Call suppression<br/>E.164 · permanent entries]
+    DNC --> OUT[API · dashboard · CSV export]
 ```
 
-### Verified checkpoint
+## Release gate
 
-At the documented 3 October 2026 checkpoint:
-
-- 2,743,454 live establishments
-- 815,427 organizations
-- coverage across 10 provinces and 3 territories
-- PostgreSQL 16
-- schema 0005
-- API 0.2.0
-- 435 tests collected / 423 passed / 0 failed / 12 skipped
-- fresh-image migration 0001 → 0005 verified in a disposable database
-
-These are engineering-scale and verification metrics, not claims of customer revenue or business outcomes.
+```mermaid
+flowchart LR
+    A[Change] --> B[pytest in test container]
+    B -->|any failure| A
+    B --> C[Fresh empty database:<br/>migrate 0001 → head]
+    C --> D[API + DB health check<br/>schema revision and version]
+    D --> E[Release notes + evidence folder]
+```
