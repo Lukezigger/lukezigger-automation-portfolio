@@ -1,18 +1,12 @@
 # Canada B2B Data Automation Platform
 
-## Problem
+## Scope
 
-Build and validate a production-scale Canadian B2B data system capable of handling millions of establishment records while preserving data quality, provenance and operational reliability.
+This case study documents a large-scale Canadian B2B data automation project. The public repository does not contain the raw dataset, private source configuration, credentials or proprietary entity-matching logic.
 
-This public case study intentionally documents engineering outcomes rather than publishing the underlying dataset, private source details or proprietary matching logic.
+## Documented project checkpoint — 3 October 2026
 
-## What was built
-
-The system provides a structured data pipeline and API layer backed by PostgreSQL, with scheduled processing, validation and production health checks.
-
-### Verified production checkpoint — 3 October 2026
-
-| Metric | Verified state |
+| Metric | Recorded state |
 |---|---:|
 | Live establishments | 2,743,454 |
 | Organizations | 815,427 |
@@ -22,46 +16,46 @@ The system provides a structured data pipeline and API layer backed by PostgreSQ
 | API | 0.2.0 |
 | Tests | 435 collected / 423 passed / 0 failed / 12 skipped |
 
-A fresh-image migration from schema **0001 → 0005** was also verified in a disposable database.
+The project checkpoint also recorded a fresh-image migration from schema **0001 → 0005** in a disposable database.
 
-## Architecture
+**Evidence status:** these values come from the project release checkpoint. The public portfolio does not yet include the raw pytest output, count-query output or migration log, so this page does not claim that a visitor can independently verify the numbers from this repository alone.
+
+## Pipeline
 
 ```text
-Source data
+Source inputs
     ↓
 Ingestion
     ↓
 Validation / normalization
     ↓
-Deduplication and entity handling
+Deduplication / entity handling
     ↓
 Provenance-aware storage
     ↓
 PostgreSQL
     ↓
-API / scheduled processing
+API + scheduled processing
     ↓
-Health checks and operational verification
+Health / release verification
 ```
 
-## Engineering focus
+A more detailed public diagram is in [architecture/canada-b2b-platform.md](../architecture/canada-b2b-platform.md).
 
-The important part of this project was not simply collecting records. The production work required repeatable migrations, database/API health validation, regression testing, scheduled processing and provenance-aware data handling.
+## Engineering work represented
 
-## Reliability evidence
+The project required database/schema management, repeatable migrations, API/database health checks, scheduled processing, regression testing and provenance-aware data handling at multi-million-record scale.
 
-The final development checkpoint reported **0 failed tests** across 435 collected tests, with 423 passing and 12 intentionally skipped. Production database and API health were verified at release time.
+## Evidence still required for a stronger public claim
 
-## Public-data boundary
+Before this portfolio calls the checkpoint independently verified, it should contain sanitized copies of:
+- the corresponding pytest output and skip reasons;
+- the fresh-database migration log;
+- timestamped aggregate count-query output;
+- a safe API specification or representative API evidence.
 
-This repository does **not** contain raw production records, credentials, private source configuration, personal information or proprietary matching rules. Any future runnable examples will use synthetic data.
+## Data and ownership boundary
 
-## What this demonstrates
+The public portfolio intentionally does not state a source/licence category or ownership claim that has not yet been cleared for publication. Raw records, personal information, source endpoints and proprietary matching rules are not published.
 
-- production-scale data operations
-- PostgreSQL and schema management
-- API-backed systems
-- testing and regression discipline
-- scheduler/worker operations
-- provenance and data-quality thinking
-- ability to move from business requirement to production verification
+Any future runnable public example should use synthetic data.
