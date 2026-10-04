@@ -1,19 +1,17 @@
-# Evidence Index
+# Evidence index
 
-| Item | What is public | Evidence status |
-|---|---|---|
-| [Canada B2B Data Automation Platform](projects/canada-b2b-data-platform.md) | Checkpoint metrics, engineering description, architecture | Documented project checkpoint; raw test/query/migration evidence not yet public |
-| [Authenticated Gemini n8n endpoint](n8n-workflows/ai-consultation-engine/README.md) | Sanitized workflow JSON and technical notes | Inspectable JSON; clean-instance import/run test still required |
-| [Multi-Agent Operations](architecture/multi-agent-control-plane.md) | Control-plane architecture | Design note only; no runtime claim |
+| Item | Type | What is public | Evidence status |
+|---|---|---|---|
+| [AI consultation endpoint](n8n-workflows/ai-consultation-engine/) | LukeZigger workflow | JSON, tests, test double, logs, screenshots | Tested 4 Oct 2026, n8n 2.41.6, 10/10 (mock model; no live Gemini call) |
+| [WhatsApp lead qualification](n8n-workflows/whatsapp-lead-qualification/) | LukeZigger demo workflow | JSON, logs, screenshots | Tested 4 Oct 2026, 5/5 |
+| [Call outcome → CRM → follow-up](n8n-workflows/calling-agent-crm-followup/) | LukeZigger demo workflow | JSON, tests, mock CRM, logs, screenshots | Tested 4 Oct 2026, 6/6 (mock CRM) |
+| [Canadian B2B data platform](projects/canada-b2b-data-platform.md) | Client project, anonymized | Case study, logical architecture | Privately verified checkpoint; client evidence confidential ([statement](evidence/canada-b2b/README.md)) |
+| [Multi-agent control plane](architecture/multi-agent-control-plane.md) | Design note | Diagram and principles | No runtime claim |
 
-## Evidence standard
+## Terms used
 
-This portfolio distinguishes among:
+- **Tested:** the test output is in this repository and you can rerun it.
+- **Privately verified:** checked against records that cannot be published. You cannot verify these from here.
+- **Design note:** reasoning only, not evidence that a system exists.
 
-**Inspectable artifact** — a visitor can examine it directly in this repository.
-
-**Documented project checkpoint** — a value recorded during project work but whose underlying raw evidence is not yet included publicly.
-
-**Design note** — architecture or reasoning that is not presented as proof of a deployed implementation.
-
-Client outcomes, revenue, certifications, runtime validation and production claims are not inferred from diagrams or generated documentation.
+No client outcomes, revenue figures, testimonials or certifications are claimed anywhere in this repository.
