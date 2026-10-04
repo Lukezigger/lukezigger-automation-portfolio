@@ -1,0 +1,14 @@
+n8n version: 2.41.6  run at: 2026-10-04T10:28:30Z
+### AI calling agent -> CRM v2 (CRM/notify URLs pointed at a local mock CRM)
+--- qualified
+HTTP 200 | {'qualification': 'qualified', 'status': 'processed', 'follow_up_task': 'Call Test Caller regarding demo_request'}
+--- quote
+HTTP 200 | {'qualification': 'qualified', 'status': 'processed', 'follow_up_task': 'Call Test Caller 2 regarding demo_request'}
+--- unqualified
+HTTP 200 | {'qualification': 'not_qualified', 'status': 'logged'}
+--- missing
+HTTP 400 | {'error': 'invalid_input', 'details': ['phone is required', 'call_summary is required']}
+--- crm_down
+HTTP 502 | {'error': 'crm_unavailable', 'detail': 'CRM request failed after 3 attempts'}
+--- noauth
+HTTP 403 | Authorization data is wrong!

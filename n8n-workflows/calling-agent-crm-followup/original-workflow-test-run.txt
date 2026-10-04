@@ -1,0 +1,15 @@
+# ORIGINAL workflow (exported 2026-09-03), run unchanged on n8n 2.41.6 on 2026-10-04.
+# Only change: the two example.com endpoints were pointed at a local mock CRM that logs what it receives.
+# Reading the log: in the quote case the CRM received a JSON *string* that itself is malformed JSON, not an object ("validJson" only means the outer body parsed). Both sales notifications have an empty name and intent.
+### AI calling agent -> CRM (original workflow; CRM/notify URLs pointed at a local mock CRM)
+--- case qualified
+{"message":"Workflow was started"} | HTTP 200
+--- case quote-in-summary
+{"message":"Workflow was started"} | HTTP 200
+--- case not qualified
+{"message":"Workflow was started"} | HTTP 200
+--- mock CRM received:
+{"at":"2026-10-04T10:22:01.621Z","method":"POST","path":"/api/crm/contacts","query":"","validJson":true,"body":{"name":"Test Caller","phone":"+910000000003","email":"caller@example.com","intent":"demo_request","priority":"normal","summary":"Interested in pricing, wants to book a demo"}}
+{"at":"2026-10-04T10:22:01.676Z","method":"GET","path":"/api/notify-sales","query":"message=Qualified call:  —  — follow-up required","validJson":null,"body":null}
+{"at":"2026-10-04T10:22:03.557Z","method":"POST","path":"/api/crm/contacts","query":"","validJson":true,"body":"{\"name\":\"Test Caller 2\",\"phone\":\"+910000000004\",\"email\":\"c2@example.com\",\"intent\":\"demo_request\",\"priority\":\"normal\",\"summary\":\"Said the \"starter\" plan looks interested for a demo\"}"}
+{"at":"2026-10-04T10:22:03.574Z","method":"GET","path":"/api/notify-sales","query":"message=Qualified call:  —  — follow-up required","validJson":null,"body":null}
