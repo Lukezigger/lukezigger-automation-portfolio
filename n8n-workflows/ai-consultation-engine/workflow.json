@@ -1,0 +1,102 @@
+{
+  "name": "AI Consultation Engine - Sanitized Portfolio Example",
+  "nodes": [
+    {
+      "id": "webhook-node",
+      "name": "Consultation Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-40, 300],
+      "parameters": {
+        "path": "portfolio-consultation",
+        "httpMethod": "POST",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "check-auth-node",
+      "name": "Check Shared Secret",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [180, 300],
+      "parameters": {
+        "conditions": {
+          "options": {"caseSensitive": true, "leftValue": "", "typeValidation": "strict"},
+          "conditions": [{
+            "id": "auth-check",
+            "leftValue": "={{$json.headers['x-webhook-secret']}}",
+            "rightValue": "={{$env.PORTFOLIO_SHARED_SECRET}}",
+            "operator": {"type": "string", "operation": "equals"}
+          }],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "llm-request-node",
+      "name": "Call Gemini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [420, 220],
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ contents: [ { parts: [ { text: $json.body.prompt } ] } ], generationConfig: { temperature: 0.2, responseMimeType: \"application/json\" } }) }}",
+        "options": {"timeout": 18000}
+      }
+    },
+    {
+      "id": "extract-text-node",
+      "name": "Extract Model Text",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [640, 220],
+      "parameters": {
+        "mode": "manual",
+        "assignments": {"assignments": [{
+          "id": "extracted-text",
+          "name": "responseText",
+          "type": "string",
+          "value": "={{ $json.candidates?.[0]?.content?.parts?.[0]?.text || '' }}"
+        }]}
+      }
+    },
+    {
+      "id": "respond-success-node",
+      "name": "Respond With Analysis",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [860, 220],
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.responseText }}",
+        "options": {"responseCode": 200}
+      }
+    },
+    {
+      "id": "respond-unauthorized-node",
+      "name": "Respond Unauthorized",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [420, 420],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ error: \"unauthorized\" }) }}",
+        "options": {"responseCode": 401}
+      }
+    }
+  ],
+  "connections": {
+    "Consultation Webhook": {"main": [[{"node": "Check Shared Secret","type":"main","index":0}]]},
+    "Check Shared Secret": {"main": [[{"node":"Call Gemini","type":"main","index":0}],[{"node":"Respond Unauthorized","type":"main","index":0}]]},
+    "Call Gemini": {"main": [[{"node":"Extract Model Text","type":"main","index":0}]]},
+    "Extract Model Text": {"main": [[{"node":"Respond With Analysis","type":"main","index":0}]]}
+  },
+  "settings": {"executionOrder": "v1"},
+  "_portfolio_notice": "Sanitized from a real LukeZigger workflow. No credentials, production webhook identifiers, client data, or credential IDs are included. This public copy has not been import-tested against a clean live n8n instance; validate and attach your own credentials before use."
+}
