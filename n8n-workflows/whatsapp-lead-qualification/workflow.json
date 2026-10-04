@@ -1,0 +1,366 @@
+{
+  "name": "WhatsApp Lead Qualification & Appointment Routing (demo, v2)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lz-whatsapp-lead-demo",
+        "responseMode": "responseNode",
+        "options": {},
+        "authentication": "headerAuth"
+      },
+      "id": "1",
+      "name": "WhatsApp Lead Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1140,
+        0
+      ],
+      "webhookId": "00000000-0000-4000-8000-000000000001",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL",
+          "name": "Webhook shared secret (x-webhook-secret)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = ($json.body && typeof $json.body === 'object') ? $json.body : {};\nconst text = typeof body.message === 'string' ? body.message.trim() : (typeof body.text === 'string' ? body.text.trim() : '');\nconst name = typeof body.name === 'string' ? body.name.trim() : '';\nconst phone = typeof body.phone === 'string' ? body.phone.trim() : '';\nconst errors = [];\nif (!text) errors.push('message is required');\nif (!phone) errors.push('phone is required');\nif (text.length > 2000) errors.push('message must be at most 2000 characters');\nif (errors.length) return [{ json: { valid: false, errors } }];\n\nconst lower = text.toLowerCase();\nlet service = 'General Consultation';\nif (lower.includes('dermat') || lower.includes('skin')) service = 'Dermatology';\nelse if (lower.includes('dental') || lower.includes('dentist')) service = 'Dental';\nelse if (lower.includes('pediatric') || lower.includes('child')) service = 'Pediatrics';\n\nconst bookingWords = ['appointment', 'book', 'slot', 'available', 'availability', 'schedule', 'visit'];\nconst intent = bookingWords.some(k => lower.includes(k)) ? 'Appointment Booking' : 'General Enquiry';\n\nlet preferredTime = null;\nconst timeMatch = text.match(/\\b(1[0-2]|0?[1-9])(?::([0-5]\\d))?\\s*(am|pm)\\b/i);\nif (timeMatch) preferredTime = `${timeMatch[1]}${timeMatch[2] ? ':' + timeMatch[2] : ':00'} ${timeMatch[3].toUpperCase()}`;\nlet preferredDate = 'Needs confirmation';\nif (lower.includes('tomorrow')) preferredDate = 'Tomorrow';\nelse if (lower.includes('today')) preferredDate = 'Today';\n\nreturn [{ json: {\n  valid: true,\n  lead_id: `LZ-${$execution.id}`,\n  lead_name: name || 'Unknown',\n  phone, message: text,\n  source: typeof body.source === 'string' ? body.source : 'WhatsApp',\n  intent, service,\n  preferred_date: preferredDate,\n  preferred_time: preferredTime ?? 'Needs confirmation',\n  received_at: new Date().toISOString()\n} }];"
+      },
+      "id": "2",
+      "name": "Normalize Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -920,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $json;\nlet score = 20;\n\nif (lead.intent === 'Appointment Booking') score += 25;\nif (lead.service !== 'General Consultation') score += 10;\nif (lead.preferred_date !== 'Needs confirmation') score += 10;\nif (lead.preferred_time !== 'Needs confirmation') score += 10;\nif (/^\\+?[1-9]\\d{9,14}$/.test(lead.phone.replace(/[\\s-]/g, ''))) score += 5;\n\nscore = Math.min(score, 100);\n\nlet qualification = 'Cold';\nif (score >= 80) qualification = 'Hot';\nelse if (score >= 60) qualification = 'Warm';\n\nlet next_action = 'Send information and request preferred appointment details';\nif (qualification === 'Hot') next_action = 'Check calendar availability and offer booking slot';\nelse if (qualification === 'Warm') next_action = 'Ask one qualification question and offer available slots';\n\nreturn [{\n  json: {\n    ...lead,\n    lead_score: score,\n    qualification,\n    next_action,\n    demo_note: 'Demo workflow - rule-based scoring, no external systems called'\n  }\n}];"
+      },
+      "id": "3",
+      "name": "Score & Qualify Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -420,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.qualification }}",
+                    "rightValue": "Hot",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HOT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.qualification }}",
+                    "rightValue": "Warm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "WARM"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "4",
+      "name": "Route Hot Warm Cold",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -120,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const x = $json;\nreturn [{\n  json: {\n    ...x,\n    calendar_action: 'CHECK_AVAILABILITY',\n    crm_stage: 'Qualified - Booking Ready',\n    owner_alert: `HOT LEAD: ${x.lead_name} wants ${x.service} on ${x.preferred_date} at ${x.preferred_time}`,\n    whatsapp_reply: `Hi ${x.lead_name}, thanks for contacting us. I have your ${x.service} appointment request for ${x.preferred_date} at ${x.preferred_time}. I\u2019m checking availability now and will confirm the closest available slot.`\n  }\n}];"
+      },
+      "id": "5",
+      "name": "Hot Lead - Booking Path",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const x = $json;\nreturn [{\n  json: {\n    ...x,\n    calendar_action: 'ASK_FOR_DETAILS',\n    crm_stage: 'Qualified - Needs Details',\n    owner_alert: `WARM LEAD: ${x.lead_name} is interested in ${x.service}`,\n    whatsapp_reply: `Hi ${x.lead_name}, I can help with your ${x.service} booking. What date and time would work best for you?`\n  }\n}];"
+      },
+      "id": "6",
+      "name": "Warm Lead - Follow Up",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const x = $json;\nreturn [{\n  json: {\n    ...x,\n    calendar_action: 'NO_BOOKING_YET',\n    crm_stage: 'New Lead - Nurture',\n    owner_alert: `NEW LEAD: ${x.lead_name} needs follow-up`,\n    whatsapp_reply: `Hi ${x.lead_name}, thanks for reaching out. Please tell us which service you need and your preferred appointment date/time, and we\u2019ll help you with the next available slot.`\n  }\n}];"
+      },
+      "id": "7",
+      "name": "Cold Lead - Nurture",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        180,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const x = $json;\nreturn [{\n  json: {\n    success: true,\n    workflow: 'LukeZigger AI Clinic Lead Automation Demo',\n    lead_id: x.lead_id,\n    lead_name: x.lead_name,\n    phone: x.phone,\n    service: x.service,\n    preferred_date: x.preferred_date,\n    preferred_time: x.preferred_time,\n    lead_score: x.lead_score,\n    qualification: x.qualification,\n    crm_stage: x.crm_stage,\n    calendar_action: x.calendar_action,\n    whatsapp_reply: x.whatsapp_reply,\n    owner_alert: x.owner_alert,\n    processed_at: new Date().toISOString(),\n    disclosure: 'Demo workflow with synthetic sample data; connect official WhatsApp, Calendar and CRM credentials for production use.'\n  }\n}];"
+      },
+      "id": "8",
+      "name": "Prepare CRM & WhatsApp Output",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        470,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "id": "9",
+      "name": "Return Automation Result",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        750,
+        20
+      ]
+    },
+    {
+      "id": "input-valid",
+      "name": "Input Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -700,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "400-invalid-input",
+      "name": "400 Invalid Input",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        -420,
+        220
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { error: \"invalid_input\", details: $json.errors } }}",
+        "options": {
+          "responseCode": 400
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Lead Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead": {
+      "main": [
+        [
+          {
+            "node": "Input Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Score & Qualify Lead": {
+      "main": [
+        [
+          {
+            "node": "Route Hot Warm Cold",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Hot Warm Cold": {
+      "main": [
+        [
+          {
+            "node": "Hot Lead - Booking Path",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Warm Lead - Follow Up",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cold Lead - Nurture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hot Lead - Booking Path": {
+      "main": [
+        [
+          {
+            "node": "Prepare CRM & WhatsApp Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Warm Lead - Follow Up": {
+      "main": [
+        [
+          {
+            "node": "Prepare CRM & WhatsApp Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cold Lead - Nurture": {
+      "main": [
+        [
+          {
+            "node": "Prepare CRM & WhatsApp Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare CRM & WhatsApp Output": {
+      "main": [
+        [
+          {
+            "node": "Return Automation Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Valid?": {
+      "main": [
+        [
+          {
+            "node": "Score & Qualify Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "400 Invalid Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": []
+}

@@ -1,0 +1,14 @@
+n8n version: 2.41.6  run at: 2026-10-04T10:28:30Z
+### WhatsApp lead qualification v2
+--- hot
+HTTP 200 | {'qualification': 'Hot', 'lead_score': 80, 'service': 'Dermatology', 'preferred_date': 'Tomorrow', 'preferred_time': '6:00 PM', 'crm_stage': 'Qualified - Booking Ready'}
+--- warm
+HTTP 200 | {'qualification': 'Warm', 'lead_score': 60, 'service': 'Dental', 'preferred_date': 'Needs confirmation', 'preferred_time': 'Needs confirmation', 'crm_stage': 'Qualified - Needs Details'}
+--- cold
+HTTP 200 | {'qualification': 'Cold', 'lead_score': 25, 'service': 'General Consultation', 'preferred_date': 'Needs confirmation', 'preferred_time': 'Needs confirmation', 'crm_stage': 'New Lead - Nurture'}
+--- empty
+HTTP 400 | {'error': 'invalid_input', 'details': ['message is required', 'phone is required']}
+--- noauth
+HTTP 403 | Authorization data is wrong!
+
+same input as original case B -> Warm 60

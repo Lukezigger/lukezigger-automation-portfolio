@@ -1,0 +1,6 @@
+# ORIGINAL workflow (exported 2026-09-04), run unchanged on n8n 2.41.6, 2026-10-04.
+# Inputs: A hot booking request; B dentist enquiry with no date/time; C "what are your timings" with an invalid phone; D empty request body.
+{'lead_name': 'Test Lead A', 'service': 'Dermatology', 'preferred_date': 'Tomorrow', 'preferred_time': '6:00 PM', 'lead_score': 100, 'qualification': 'Hot', 'crm_stage': 'Qualified - Booking Ready', 'calendar_action': 'CHECK_AVAILABILITY'}
+{'lead_name': 'Test Lead B', 'service': 'Dental', 'preferred_date': 'Needs confirmation', 'preferred_time': 'Needs confirmation', 'lead_score': 80, 'qualification': 'Hot', 'crm_stage': 'Qualified - Booking Ready', 'calendar_action': 'CHECK_AVAILABILITY'}
+{'lead_name': 'Test Lead C', 'service': 'General Consultation', 'preferred_date': 'Needs confirmation', 'preferred_time': 'Needs confirmation', 'lead_score': 65, 'qualification': 'Warm', 'crm_stage': 'Qualified - Needs Details', 'calendar_action': 'ASK_FOR_DETAILS'}
+{'lead_name': 'Aarav Sharma', 'service': 'Dermatology', 'preferred_date': 'Tomorrow', 'preferred_time': '6:00 PM', 'lead_score': 100, 'qualification': 'Hot', 'crm_stage': 'Qualified - Booking Ready', 'calendar_action': 'CHECK_AVAILABILITY'}
