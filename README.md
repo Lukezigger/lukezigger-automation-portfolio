@@ -18,17 +18,19 @@ A production-scale data automation system covering all 10 Canadian provinces and
 - 435 tests collected · 423 passed · 0 failed · 12 skipped
 - Fresh-image migration from schema 0001 → 0005 verified in a disposable database
 
-[Read the case study](projects/canada-b2b-data-platform.md)
+[Read the case study](projects/canada-b2b-data-platform.md) · [Architecture](architecture/canada-b2b-platform.md)
 
 ### 🤖 Multi-Agent Operations System
 A controlled multi-agent automation architecture designed around specialized agents, shared operational state, approval gates, monitoring and human control for consequential actions.
 
 This portfolio presents the architecture and controls without exposing production data, private prompts, credentials or proprietary business information.
 
-[Read the architecture case study](projects/multi-agent-ops-controls.md)
+[Read the case study](projects/multi-agent-ops-controls.md) · [Control-plane architecture](architecture/multi-agent-control-plane.md)
 
 ### ⚙️ n8n Automation Library
-A curated portfolio of business workflow automations. Public workflow exports are added only after credentials, webhook URLs, client identifiers and private production data have been removed and the sanitized workflow has been validated.
+A curated portfolio of business workflow automations. Public workflow exports are added only after credentials, webhook URLs, client identifiers and private production data have been removed and the sanitized workflow has been checked.
+
+**Published evidence:** [AI Consultation Engine](n8n-workflows/ai-consultation-engine/README.md) — webhook authorization → Gemini → structured response path, with sanitized JSON available for inspection.
 
 [Explore the workflow library](n8n-workflows/README.md)
 
@@ -55,6 +57,10 @@ Python · JavaScript · PostgreSQL · REST APIs · n8n · Playwright · Docker �
 I am **Syed Mazhar Ul Islam**, Founder of LukeZigger AI and an ex-Tata Consultancy Services operations professional. My work combines business operations knowledge with automation engineering: understanding the real process first, then selecting and implementing the appropriate technology.
 
 This repository is deliberately evidence-focused. Client data, credentials, proprietary workflows and confidential production assets are not published.
+
+## Navigate
+
+See the [complete project index](PROJECTS.md) for the current public evidence set.
 
 ## Contact
 
