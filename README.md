@@ -1,67 +1,54 @@
-# LukeZigger AI — Automation Portfolio
+# Syed Mazhar Ul Islam — Automation & Integration Portfolio
 
-Production-minded automation, integration and business-operations systems built by **Syed Mazhar Ul Islam**.
+I build and validate business-process automation, data pipelines and API integrations. **LukeZigger AI** is the independent automation practice through which I develop and deliver this work.
 
-> I turn manual business processes into monitored, reliable automation systems.
+## Public proof available now
 
-## Featured work
+### Canada B2B data platform — engineering case study
+A large-scale Canadian B2B data platform with PostgreSQL, an API layer, scheduled processing and release verification.
 
-### 🇨🇦 Canada B2B Data Automation Platform
-A production-scale data automation system covering all 10 Canadian provinces and 3 territories.
-
-**Verified engineering checkpoint**
+The documented 3 October 2026 checkpoint recorded:
 - 2,743,454 live establishments
 - 815,427 organizations
-- PostgreSQL 16
-- Schema version 0005
-- API version 0.2.0
+- coverage across all 10 provinces and 3 territories
+- PostgreSQL 16 · schema 0005 · API 0.2.0
 - 435 tests collected · 423 passed · 0 failed · 12 skipped
-- Fresh-image migration from schema 0001 → 0005 verified in a disposable database
+- fresh-image migration 0001 → 0005 checked in a disposable database
 
-[Read the case study](projects/canada-b2b-data-platform.md) · [Architecture](architecture/canada-b2b-platform.md)
+These figures are **documented project checkpoint values**. This public portfolio does not yet include the underlying test log, database query output or migration log, so I do not present the repository itself as independent verification of those figures.
 
-### 🤖 Multi-Agent Operations System
-A controlled multi-agent automation architecture designed around specialized agents, shared operational state, approval gates, monitoring and human control for consequential actions.
+[Case study](projects/canada-b2b-data-platform.md) · [Public architecture](architecture/canada-b2b-platform.md)
 
-This portfolio presents the architecture and controls without exposing production data, private prompts, credentials or proprietary business information.
+### n8n — authenticated Gemini endpoint
+The repository contains one sanitized n8n workflow derived from a real LukeZigger implementation.
 
-[Read the case study](projects/multi-agent-ops-controls.md) · [Control-plane architecture](architecture/multi-agent-control-plane.md)
+[Workflow notes](n8n-workflows/ai-consultation-engine/README.md) · [Sanitized JSON](n8n-workflows/ai-consultation-engine/workflow.json)
 
-### ⚙️ n8n Automation Library
-A curated portfolio of business workflow automations. Public workflow exports are added only after credentials, webhook URLs, client identifiers and private production data have been removed and the sanitized workflow has been checked.
+The public copy is for inspection and is **not yet claimed as clean-instance import-tested**. Additional workflows will be published only after the original exports can be sanitized and validated.
 
-**Published evidence:** [AI Consultation Engine](n8n-workflows/ai-consultation-engine/README.md) — webhook authorization → Gemini → structured response path, with sanitized JSON available for inspection.
+### Multi-agent automation
+The current public material is a **design note**, not runtime proof of a deployed system.
 
-[Explore the workflow library](n8n-workflows/README.md)
+[Control-plane design note](architecture/multi-agent-control-plane.md)
 
-## How I build
+## My role and use of AI tools
 
-I focus on the parts that separate production automation from a demo:
+I translate operational requirements into automation designs, integration flows, controls and verification steps. AI assistants are part of my implementation workflow for research, drafting, coding and review. I remain responsible for deciding what is implemented, checking outputs, testing changes and not presenting generated material as evidence that has not been verified.
 
-- clear business-process mapping
-- API and system integrations
-- retries and failure handling
-- idempotency and duplicate protection
-- logging and monitoring
-- human approval gates where required
-- testing and regression checks
-- runbooks and operational handover
-- least-privilege handling of credentials and data
+My background includes business operations at Tata Consultancy Services and building automation systems through LukeZigger AI.
 
-## Technology
+## Tools represented in my work
 
 Python · JavaScript · PostgreSQL · REST APIs · n8n · Playwright · Docker · AI/LLM integrations · workflow automation · data operations
 
-## About
+## Work with LukeZigger
 
-I am **Syed Mazhar Ul Islam**, Founder of LukeZigger AI and an ex-Tata Consultancy Services operations professional. My work combines business operations knowledge with automation engineering: understanding the real process first, then selecting and implementing the appropriate technology.
+Typical engagements start with the manual process and its failure points, then move through **scope → build → test → handover/operation**. I focus on workflow automation, integrations, business operations automation and data-processing systems.
 
-This repository is deliberately evidence-focused. Client data, credentials, proprietary workflows and confidential production assets are not published.
+Website: https://www.lukezigger.com/
 
-## Navigate
+## Evidence policy
 
-See the [complete project index](PROJECTS.md) for the current public evidence set.
+This repository intentionally separates **documented project facts**, **publicly inspectable artifacts**, and **design notes**. Client data, credentials, private prompts, raw datasets and proprietary production logic are not published.
 
-## Contact
-
-**LukeZigger AI** — https://www.lukezigger.com/
+See [PROJECTS.md](PROJECTS.md) for the current evidence index.
